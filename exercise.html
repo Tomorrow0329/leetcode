@@ -1,0 +1,165 @@
+<html>
+
+<body>
+    <header></header>
+    <div id="app" onclick="postMessage">Click me !</div>
+
+    <script>
+        // var popup = window.open('http://localhost:8181/', 'title')
+        // popup.postMessage('Hello Boy !', 'http://localhost:8181/')
+
+        function addScriptTag(src) {
+        var script = document.createElement('script');
+        script.setAttribute("type","text/javascript");
+        script.src = src;
+        document.body.appendChild(script);
+        }
+
+        window.onload = function () {
+            debugger
+        addScriptTag('http://capital.shtest.ke.com/api/cap/v1/credit-extension/query/list?pageNum=1&pageSize=10');
+        }
+
+        function foo(data) {
+            debugger
+        console.log('Your public IP address is: ' + data.ip);
+        };
+
+/*
+* window CustomEvent 自定义事件
+*
+*/
+
+        // const dom = document.getElementById('app');
+
+        // const event = new CustomEvent('hello', { detail: { name: 'Tomorrow' } });
+
+        // window.addEventListener('hello', (e) => {
+        //     console.log(`Hello ${e.detail.name} !`)
+        // });
+        // dom.addEventListener('click', () => {
+        //     window.dispatchEvent(event);
+        // });
+/*
+* 沙箱模式 Sandbox
+*
+*/
+
+        // function Sandbox() {
+        //     // 将参数转换为数组
+        //     const args = Array.prototype.slice.call(arguments);
+        //     const callback = args.pop(); // // 最后一个参数是回调函数
+        //     const modules = args[0] && typeof args[0] === 'string' ? args : args[0]; // 参数可以作为数组或者单独的参数传递
+        //     // 保证函数是作为构造函数被调用
+        //     if (!(this instanceof Sandbox)) {
+        //         return new Sandbox(modules, callback);
+        //     }
+        //     if (!modules || modules[0] === '*') {
+        //         for (i in Sandbox.modules) {
+        //             if (Sandbox.modules.hasOwnProperty(i)) {
+        //                 modules.push(i);
+        //             }
+        //         }
+        //     }
+
+        //     this.name = 'Sandbox';
+        //     this.age = 12;
+
+        //     // 初始化指定的模块
+        //     for (i = 0; i < modules.length; i += 1) {
+        //         Sandbox.modules[modules[i]](this);
+        //     }
+        //     // 调用回调函数
+        //     callback(this);
+
+        // }
+        // Sandbox.modules = {};
+        // Sandbox.modules.dom = function (box) {
+        //     box.getElement = function () { };
+        //     box.getStyle = function () { };
+        //     box.foo = "bar";
+        // };
+
+        // Sandbox.modules.ajax = function (box) {
+        //     box.makeRequest = function () { };
+        //     box.getResponse = function () { };
+        // };
+
+        // const boxApp = new Sandbox('dom', function (box) {
+        //     box.name = 'father';
+        //     box.child = new Sandbox('ajax', function (child) {
+        //         child.name = 'child';
+        //     })
+        // })
+        // const boxS = Sandbox('dom', function (box) {
+        //     box.name = 'fn';
+        // })
+        // console.log(boxApp, boxS)
+
+
+
+
+
+
+        /*
+        * 手写js reduce 功能
+        * @params { Objec } acc 返回的累计值;
+        * @params { String/Number } item 数组项;
+        * @params { Number } index 数组序列号;
+        * @params { Array } param 原数组;
+        */
+    // const each = (param, callback) => {
+    //     if (param instanceof Array) {
+    //         param.forEach((item, index) => {
+    //             callback(item, index);
+    //         })
+    //     }else {
+    //         throw new TypeError('参数错误');
+    //     }
+    // }
+
+    // const newReduce = (param, callback, initVal) => {
+    //     const hasInitVal = initVal !== void 0;
+    //     let acc = hasInitVal ? initVal : param[0];
+
+    //     each(hasInitVal ? param : Array.prototype.slice.call(param, 1), (item, index) => {
+    //         acc = callback(acc, item, index, param);
+    //     })
+    //     return acc;
+    // }
+
+    // Array.prototype.myReduce = function (callback, initVal) {
+    //     let param = this;
+    //     const hasInitVal = initVal !== void(0);
+    //     let res = hasInitVal ? initVal : param[0];
+
+    //     (hasInitVal ? param : Array.prototype.slice.call(param, 1)).forEach((item, index) => {
+    //         res = callback(res, item, index, param);
+    //     })
+    //     return res;
+    // }
+
+
+    // let arr = ['H', 'J', 'H', 'K'];
+    // // const demo = newReduce(arr, (acc, item, index, param) => acc + item, {});
+    // console.log(arr.myReduce((res, item, index, param) => {
+    //     if (!res[item]) {
+    //         res[item] = 1;
+    //     } else {
+    //         res[item] = res[item] + 1;
+    //     }
+    //     return res;
+    // }, {}))
+
+    // [].reduce((acc, item, index, arr) => {}, initVal)
+
+    // console.log();
+    // reduce 接受的第二个参数是一个初始值，它是可选的。如果我们传递了初始值，那么它会作为 acc 传递给第一个 callback，此时 callback 的第二个参数 val 是数组的第一项；
+    // 如果我们没有传递初始值给 reduce，那么数组的第一项会作为累计值传递给 callback，数组的第二项会作为当前项传递给 callback。
+    // [1, 2, 3, 4, 5].reduce((total, item, index, arr) => total + item, initVal); 
+
+
+    </script>
+</body>
+
+</html>
