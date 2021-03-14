@@ -3,26 +3,75 @@
 <script>
 
     /*
+    * 给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null
+    * 执行用时：104 ms, 在所有 JavaScript 提交中击败了 27.15% 的用户;
+    * 内存消耗：40 MB, 在所有 JavaScript 提交中击败了 90.89% 的用户;
+    * 理解 入环点 在什么地方很重要；理解这个推倒出来的公式 很重要：
+    * a=c+(n-1)(b+c)  从相遇点到入环点的距离加上 n-1n−1 圈的环长，恰好等于从链表头部到入环点的距离。
+    * 因此，当发现 slow 与 fast 相遇时，我们再额外使用一个指针 ptr。起始，它指向链表头部；随后，它和 slow 每次向后移动一个位置。最终，它们会在入环点相遇。
+    */
+
+    var detectCycle = function(head) {
+        let slow = head;
+        let fast = head;
+        while (fast) {
+            if (!fast.next) return null;
+            slow = slow.next;
+            fast = fast.next.next;
+            if (fast === slow) {
+                let ptr = head;
+                while (ptr !== slow) {
+                    ptr = ptr.next;
+                    slow = slow.next;
+                }
+                return ptr;
+            }
+        }
+        return null;
+    };
+
+    /*
+    * 链表-环形链表-给定一个链表，判断链表中是否有环
+    * 执行用时：104 ms, 在所有 JavaScript 提交中击败了 27.15% 的用户;
+    * 内存消耗：40 MB, 在所有 JavaScript 提交中击败了 90.89% 的用户;
+    * 第一次接触链表，就很有趣，传递的都是 指针。
+    */
+
+    // var hasCycle = function(head) {
+    //     let fast = head;
+    //     let slow = head;
+    //     debugger
+    //     while(fast) {
+    //         if (!fast.next) return false;
+    //         slow = slow.next;
+    //         fast = fast.next.next;
+    //         if (fast === slow) return true;
+    //     }
+
+    //     return false;
+    // };
+
+    /*
     * 字符串-两数之和 II - 输入有序数组
     * 这个题相当好啊，虽然简单，但是可以使用双指针、二分法 来做；
     */
 
     // 1、单个大于9的 去掉；
     // 2、和小于9的 去掉；
-    const arr = [-1,0];
-    const target = -1;
+    // const arr = [-1,0];
+    // const target = -1;
 
-    const twoSum = function(numbers, target) {
-        let i = 0;
-        let j = numbers.length - 1;
-        while (i < j) {
-            const sum = numbers[i] + numbers[j];
-            if (sum === target) return [i + 1, j + 1];
-            sum > target ? j-- : i++
-        }
-    };
+    // const twoSum = function(numbers, target) {
+    //     let i = 0;
+    //     let j = numbers.length - 1;
+    //     while (i < j) {
+    //         const sum = numbers[i] + numbers[j];
+    //         if (sum === target) return [i + 1, j + 1];
+    //         sum > target ? j-- : i++
+    //     }
+    // };
 
-    console.log(twoSum(arr, target));
+    // console.log(twoSum(arr, target));
 
 // 🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹
 /*
