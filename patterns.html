@@ -1,4 +1,81 @@
 <div id="app">设计模式--Design Patterns</div>
 <script>
-  
+  /*
+    * 发布订阅模式
+    * 定义：
+    * 原则：
+    * 现实应用：
+    */
+    // 自定义事件：使用 ECMAScript（JS）代码实现一个事件类Event ，包含下面功能：绑定事件、解绑事件和派发事件。
+    class Event {
+      constructor () {
+        this.cache = {};
+      }
+
+      on (eventType, fn) {
+        if (!this.cache[eventType]) {
+          this.cache[eventType] = [];
+        }
+        this.cache[eventType].push(fn);
+      };
+      off () {};
+      emit (eventType, ...args) {
+        const fns = this.cache[eventType];
+        if (!fns) return false;
+        for (let i = 0; i < fns.length; i++) {
+          fns[i].apply(this, args)
+        }
+      };
+    }
+
+    const myEvent = new Event();
+    myEvent.on('click', () => {
+      console.log('My first event !');
+    });
+    myEvent.on('click', () => {
+      console.log('My second event !');
+    })
+    myEvent.on('sleep', (name) => {
+      console.log(name + ', It is time to go to bed ~')
+    })
+
+    myEvent.emit('click');
+    myEvent.emit('sleep', 'Tomorrow');
+
+
+
+    /*
+    * 策略模式
+    * 定义：定义一系列算法，把它们各自封装起来，并且可以使它们相互替换。
+    * 个人理解：为了解决某个问题，对于不同的问题场景 封装不同的算法，从而达到解决该问题的目的；广义上来讲，
+    * 策略模式也可以用来封装一系列“业务规则”；
+    * 原则：将 算法的使用 和 算法的实现 分离开来；
+    * 现实应用：缓动效果、表单校验
+    */
+    // 年终奖发放规则
+
+    const strategies = {
+      'S': (salary) => salary * 4,
+      'A': (salary) => salary * 2,
+      'B': (salary) => salary * 1,
+    };
+    const getMoney = (level, salary) => (strategies[level](salary));
+
+    // console.log(getMoney('S', 10000));
+    // console.log(getMoney('A', 10000));
+    // console.log(getMoney('B', 10000));
+
+    // 优化表单校验
+    const strategies2 = {
+      isEmptyVal: (value) => value === '',
+      isTooShort: (value) => value.length && value.length < 6,
+      isPhoneNumber: (value) => /(^1[3][5|8][0-9]{9}$)/.test(value),
+    }
+
+    const isValid = (type, value) => strategies2[type] && strategies2[type](value);
+
+
+    // console.log(isValid('isEmptyVal', ''));
+    // console.log(isValid('isTooShort', '123'));
+    // console.log(isValid('isPhoneNumber', '123'));
 </script>
