@@ -3,6 +3,204 @@
 <script>
 
     /*
+    * 函数柯理化
+    */
+
+    const sum = (a, b, c) => a * b * c; 
+    // const curry = function (fn, params) {
+    //     const args = params || [];
+    //     return function () {
+    //         const innerArgs = Array.prototype.slice.call(arguments);
+    //         const allArgs = args.concat(innerArgs);
+    //         if (allArgs.length >= fn.length) {
+    //             return fn.apply(this, allArgs);
+    //         } else {
+    //             return curry.call(this, fn, allArgs);
+    //         }
+            
+    //     }
+    // }
+
+    // const curry = (fn) => {
+    //     return function curried(...args) {
+    //         if (args.length >= fn.length) {
+    //             return fn.apply(this, args);
+    //         } else {
+    //             return function (...argsInner) {
+    //                 return curried.apply(this, args.concat(argsInner))
+    //             }
+    //         }
+    //     }
+    // }
+
+    const curry = (fn, params) => {
+        const args = params || [];
+        return (...innerArgs) => {
+            const allArgs = args.concat(innerArgs);
+            if (allArgs.length >= fn.length) {
+                return fn.apply(this, allArgs);
+            } else {
+                return curry.call(this, fn, allArgs)
+            }
+        }
+    }
+
+    const curriedSum = curry(sum);
+
+    console.log(curriedSum(2)(3, 3));
+    
+
+    /*
+    * 手写Promise
+    */
+
+    const PENDDING = 'PENDDING';
+    const FULFILLED = 'FULFILLED';
+    const REJECTED = 'REJECTED';
+
+    // 1. 普通值
+// 2. promise 值
+// 3. thenable 的值，执行 then
+
+    class Promise {
+        constructor(handler) {
+            // Promise需要维护的几个状态；
+            this.status = PENDDING;
+            this.successVal = undefined;
+            this.errorVal = undefined;
+
+            // 处理handler为异步函数的情况，将状态缓存起来，然后执行；
+            this.onFulfilledCallbacks = [];
+            this.onRejectedCallbacks = [];
+
+            const resolve = (value) => {
+                if (this.status === PENDDING) {
+                    this.status = FULFILLED;
+                    this.successVal = value;
+                    this.onFulfilledCallbacks.forEach(fn => fn());
+                }
+            };
+            const reject = (error) => {
+                if (this.status === PENDDING) {
+                    this.status = REJECTED;
+                    this.errorVal = error;
+                    this.onRejectedCallbacks.forEach(fn => fn());
+                }
+            };
+
+            try {
+                handler(resolve, reject);
+            } catch (error) {
+                reject(error);
+            }
+        }
+
+        then(onFulfilled, onRejected) {
+            // 做参数正确性检查
+            onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : v => v;
+            onRejected = typeof onRejected === 'function' ? onRejected : error => error;
+
+            const that = this;
+            // let promise2 = undefined;
+            if (this.status === FULFILLED) {
+                return  new Promise((resolve, reject) => {
+                    try {
+                        resolve(onFulfilled(that.successVal));
+                        // resolvePromise(promise2, onFulfilled(that.successVal), resolve, reject)
+                    }
+                    catch(error) {
+                        reject(error);
+                    }
+                });
+            };
+            if (this.status === REJECTED) {
+                return new Promise((resolve, reject) => {
+                    try {
+                        reject(onRejected(that.errorVal));
+                        // resolvePromise(promise2, onRejected(that.errorVal), resolve, reject)
+
+                    }
+                    catch(error) {
+                        reject(error);
+                    }
+                });
+            };
+            // 发布订阅模式 处理handler为异步函数的情况 -- 收集依赖 -> 触发通知 -> 取出依赖执行
+            if (this.status === PENDDING) {
+                return new Promise((resolve, reject) => {
+                    this.onFulfilledCallbacks.push(() => {
+                        try {
+                            const res = onFulfilled(that.successVal);
+                            resolve(res);
+                            // resolvePromise(promise2, res, resolve, reject)
+
+                        }
+                        catch(error) {
+                            reject(error)
+                        }
+                    });
+
+                    this.onRejectedCallbacks.push(() => {
+                    try {
+                        reject(onRejected(that.errorVal));
+                        // resolvePromise(promise2, onRejected(that.errorVal), resolve, reject)
+
+                    }
+                    catch(error) {
+                        reject(error)
+                    }
+                    });
+                });                
+            }
+        }
+    }
+
+    // const p1 = new Promise((resolve, reject) => {
+    //     console.log('my Promise fn!');
+    //     setTimeout(() => {
+    //         resolve('成功');
+    //     }, 1000);
+    // }).then(data => {
+    //     return (data + ' 1234');
+    // }).then(data2 => {
+    //     console.log('data2 is: ', data2);
+    // });;
+
+// var sortArray = function(nums) {
+//     for (let gap = parseInt(nums.length / 2); gap >= 1; gap = parseInt(gap / 2)) {
+//         for (let i = gap; i < nums.length; i++) {
+//             const currentItem = nums[i];
+//             let preIndex = i - gap;
+//             while (preIndex >= 0 && nums[preIndex] > currentItem) {
+//                 nums[preIndex + gap] = nums[preIndex];
+//                 preIndex -= gap;
+//             }
+//             nums[preIndex + gap] = currentItem;
+//         }
+//     }
+//     nums.splice(0, 3, "Gold Medal", "Silver Medal", "Bronze Medal");
+//     return nums;
+
+// };
+// console.log(sortArray([5, 4, 3, 2, 1]))
+
+        // var sortArray = function(nums) {
+        //     for (let i = 1; i < nums.length; i++) {
+        //         const currentItem = nums[i];
+        //         let j = i - 1
+
+        //         while (j >= 0 && currentItem < nums[j]) {
+        //             nums[j + 1] = nums[j];
+        //             j--;
+        //         }
+        //         nums[j + 1] = currentItem;
+        //     }
+        //     return nums;
+        // };
+
+        // console.log(sortArray([5, 2, 1, 4, 6]))
+    
+    /*
     * 给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null
     * 执行用时：104 ms, 在所有 JavaScript 提交中击败了 27.15% 的用户;
     * 内存消耗：40 MB, 在所有 JavaScript 提交中击败了 90.89% 的用户;
@@ -11,24 +209,24 @@
     * 因此，当发现 slow 与 fast 相遇时，我们再额外使用一个指针 ptr。起始，它指向链表头部；随后，它和 slow 每次向后移动一个位置。最终，它们会在入环点相遇。
     */
 
-    var detectCycle = function(head) {
-        let slow = head;
-        let fast = head;
-        while (fast) {
-            if (!fast.next) return null;
-            slow = slow.next;
-            fast = fast.next.next;
-            if (fast === slow) {
-                let ptr = head;
-                while (ptr !== slow) {
-                    ptr = ptr.next;
-                    slow = slow.next;
-                }
-                return ptr;
-            }
-        }
-        return null;
-    };
+    // var detectCycle = function(head) {
+    //     let slow = head;
+    //     let fast = head;
+    //     while (fast) {
+    //         if (!fast.next) return null;
+    //         slow = slow.next;
+    //         fast = fast.next.next;
+    //         if (fast === slow) {
+    //             let ptr = head;
+    //             while (ptr !== slow) {
+    //                 ptr = ptr.next;
+    //                 slow = slow.next;
+    //             }
+    //             return ptr;
+    //         }
+    //     }
+    //     return null;
+    // };
 
     /*
     * 链表-环形链表-给定一个链表，判断链表中是否有环
@@ -122,10 +320,6 @@
 //     matrix.push(basicMatrix[x][y]);
 
 //     while ((x < N -1) || (y < M - 1)) {
-<<<<<<< HEAD
-=======
-//         debugger
->>>>>>> master
 //         if ((x === N -1) && (y === M - 1)) break;
 
 //         switch (directionFlag) {
@@ -191,11 +385,7 @@
 // ]))
 
 
-<<<<<<< HEAD
 // 🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹
-=======
-
->>>>>>> master
 /*
 * 数组--旋转矩阵
 */
@@ -238,10 +428,7 @@
 
 // console.log(rotate(matrix))
 
-<<<<<<< HEAD
 // 🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹🌹
-=======
->>>>>>> master
 /*
 * 数组--合并区间
 */
@@ -300,8 +487,6 @@
     // console.log(merge([[1,4],[0,2],[3,5]]))
     // console.log(merge([[1,4],[0,2],[3,5]]))
 
-<<<<<<< HEAD
-=======
 
 //     var setZeroes = function(matrix) {
 //     let rowList = new Set();
@@ -339,5 +524,4 @@
 // };
 // console.log(setZeroes([[1,1,1],[1,0,1],[1,1,1]]))
 
->>>>>>> master
 </script>

@@ -4,26 +4,73 @@
     <header></header>
     <div id="app" onclick="postMessage">Click me !</div>
 
-    <script>
+    <script>        
+
+        // new 一个对象的过程
+
+        const Person = function (name) {
+            this.name = name;
+        }
+        Person.prototype.getName = function () {
+            return this.name;
+        };
+
+        const objectFactory = function () {
+            const obj = new Object(); // 声明一个新对象
+            const Constructor = [].shift.call(arguments); 
+            obj._proto_ = Constructor.prototype; // 将新对象构造器原型 指向传入构造器的原型
+            const ret = Constructor.apply(obj, arguments); // 将外部构造器的属性 传给新对象
+
+            return typeof ret === 'Object' ? ret : obj;
+        }
+        const zhaoxin = objectFactory(Person, 'zhaoxin')
+
+       console.log( zhaoxin.getName())
+
+        // 手写 Object.create()
+        // Object.create = Object.create || function (obj) {
+        //     const F = function () {};
+        //     F.prototype = obj;
+        //     return new fn();
+        // }
+
+        // 多态
+        // const Duck = function () {};
+        // const Chicken = function () {};
+        // Duck.prototype.sound = function () {
+        //     console.log('嘎嘎嘎');
+        // };
+        // Chicken.prototype.sound = function () {
+        //     console.log('咯咯咯');
+        // };
+        // const makeSound = (animal) => {
+        //     debugger
+        //     animal.sound()
+        // }
+
+        // makeSound(new Duck());
+        // makeSound(new Chicken());
+
+
         // var popup = window.open('http://localhost:8181/', 'title')
         // popup.postMessage('Hello Boy !', 'http://localhost:8181/')
 
-        function addScriptTag(src) {
-        var script = document.createElement('script');
-        script.setAttribute("type","text/javascript");
-        script.src = src;
-        document.body.appendChild(script);
-        }
+        // function addScriptTag(src) {
+        // var script = document.createElement('script');
+        // script.setAttribute("type","text/javascript");
+        // script.src = src;
+        // document.body.appendChild(script);
+        // }
 
-        window.onload = function () {
-            debugger
-        addScriptTag('http://capital.shtest.ke.com/api/cap/v1/credit-extension/query/list?pageNum=1&pageSize=10');
-        }
+        // window.onload = function () {
+        //     debugger
+        // addScriptTag('http://capital.shtest.ke.com/api/cap/v1/credit-extension/query/list?pageNum=1&pageSize=10');
+        // }
 
-        function foo(data) {
-            debugger
-        console.log('Your public IP address is: ' + data.ip);
-        };
+        // function foo(data) {
+        //     debugger
+        // console.log('Your public IP address is: ' + data.ip);
+        // };
 
 /*
 * window CustomEvent 自定义事件
