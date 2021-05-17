@@ -3,7 +3,8 @@
   /*
     * 发布订阅模式
     * 定义：
-    * 原则：
+    * 发布订阅基本构成：时间存储 cache、事件监听、事件发布、取消订阅；
+    * 高级：全局发布(弱化发布/订阅双方的耦合)、离线缓存栈、创建命名空间(防止全局事件命名冲突)
     * 现实应用：
     * 如何精准删除 同一类事件中的 某一个事件？
     */
@@ -19,10 +20,26 @@
         }
         this.cache[eventType].push(fn);
       };
-      off () {};
-      emit (eventType, ...args) {
+      remove (eventType, fn) {
         const fns = this.cache[eventType];
         if (!fns) return false;
+        if (!fn) {
+          this.cache[eventType] = [];
+        } else {
+          for (let i = 0; i < fns.length; i++) {
+            if (fns[i] === fn) {
+              fns.splice(i, 1);
+            }
+          }
+        }
+
+      };
+      emit (eventType, ...args) {
+        const fns = this.cache[eventType];
+        if (!fns) {
+          console.log('No eventType !');
+          return false;
+        };
         for (let i = 0; i < fns.length; i++) {
           fns[i].apply(this, args)
         }
@@ -30,6 +47,7 @@
     }
 
     const myEvent = new Event();
+    // 接受者 监听消息
     myEvent.on('click', () => {
       console.log('My first event !');
     });
@@ -39,9 +57,18 @@
     myEvent.on('sleep', (name) => {
       console.log(name + ', It is time to go to bed ~')
     })
+    myEvent.on('sleep', (name) => {
+      console.log(name + ', It is time toooooo go to bed ~')
+    })
+    myEvent.on('hello', (name) => {
+      console.log('Good morning, '+ name + ' !')
+    })
 
+    // 发布者 发布消息
+    myEvent.remove('sleep');
     myEvent.emit('click');
     myEvent.emit('sleep', 'Tomorrow');
+    myEvent.emit('hello', 'Tomorrow');
 
 
 
