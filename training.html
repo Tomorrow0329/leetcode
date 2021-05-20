@@ -1,0 +1,47 @@
+<div>练习本</div>
+节流防抖测试框：<input id="input" placeholder="请输入"/>
+<script>
+
+  console.log('*********函数防抖**********');
+  // 约定时间内只执行一次
+  const element = document.getElementById('input');
+  const debounce = (fn, delay) => {
+      return function (args) {
+        const _this = this;
+        clearTimeout(fn.id);
+        fn.id = setTimeout(() => {
+          fn.call(_this, args);
+        }, delay);
+        }
+    }
+
+    const handleKeyup = debounce((value) => {console.log(value)}, 1000);
+
+    element.addEventListener('keyup', (e) => {
+      handleKeyup(e.target.value);
+    });
+
+
+  console.log('*********函数柯理化**********');
+  const curry = (fn, params) => {
+    const arg = params || [];
+    return (...args) => {
+      const allArgs = arg.concat(args);
+      if (allArgs.length >= fn.length) {
+        return fn.apply(this, allArgs);
+      } else {
+        return curry.call(this, fn, allArgs);
+      }
+      // if (allArgs.length >= fn.length) {
+      //   return fn.call(this, ...allArgs);
+      // } else {
+      //   return curry.apply(this, [fn, allArgs]);
+      // }
+    }
+  }
+  const sum = (a, b, c) => a + b + c;
+  const curriedSum = curry(sum);
+  console.log(curriedSum(1)(2)(3));
+  console.log(curriedSum(1, 2)(3));
+  console.log(curriedSum(1)(2, 3));
+</script>
